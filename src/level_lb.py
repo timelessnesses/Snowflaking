@@ -1,9 +1,8 @@
 import copy
 
+import asyncpg
 import discord
 from discord.ext import commands
-
-import asyncpg
 
 
 class Leaderboard(commands.Cog):
