@@ -12,10 +12,9 @@ import logging
 import os
 import subprocess
 import traceback
-import signal
 
-from replit_support import start
 from config import config
+from replit_support import start
 from sqls.wrap import SQL_Wrapper
 
 formatting = logging.Formatter("[%(asctime)s] - [%(levelname)s] [%(name)s] %(message)s")
@@ -109,7 +108,9 @@ async def main():
         started = False
         while not started:
             async with bot:
-                bot.db = await asyncpg.create_pool(config.database_url,ssl="prefer") # just knew perfer option!
+                bot.db = await asyncpg.create_pool(
+                    config.database_url, ssl="prefer"
+                )  # just knew perfer option!
                 log.debug("Connected to database")
                 bot.db = SQL_Wrapper(bot.db)
                 await bot.db.execute(open("sqls/schema.sql").read())
@@ -139,12 +140,14 @@ async def main():
     except KeyboardInterrupt:
         log.info("Exiting...")
 
-async def runner(): # a runner for bot and watch every exceptions and `close` db properly
+
+async def runner():  # a runner for bot and watch every exceptions and `close` db properly
     try:
         await main()
     except Exception:
         print(traceback.format_exc())
         await bot.db.close()
+
 
 if __name__ == "__main__":
     asyncio.run(runner())

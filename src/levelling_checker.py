@@ -1,7 +1,6 @@
+import asyncpg
 import discord
 from discord.ext import commands, tasks
-
-import asyncpg
 
 
 class Checks(commands.Cog):

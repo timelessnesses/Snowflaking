@@ -1,15 +1,15 @@
 import sys
 import typing
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 sys.path.append("..")
 
+import asyncpg
 import discord
 import pytz
 from discord import app_commands
 from discord.ext import commands, tasks
-import asyncpg
+
 
 class Timezone_checker(commands.Converter):
     async def convert(self, ctx: commands.Context, argument: str):
@@ -82,7 +82,7 @@ class Christmas(commands.Cog):
                     )
                 )[0]
             except IndexError:
-                continue # no reminder message so nothing to do
+                continue  # no reminder message so nothing to do
             reminder_message = await guild.get_channel(
                 reminder_message["channel_id"]
             ).fetch_message(reminder_message["message_id"])
@@ -195,7 +195,9 @@ class Christmas(commands.Cog):
             current_timezone = pytz.timezone("UTC")
         current_time = now.astimezone(current_timezone)
         print(current_time)
-        christmas_time = datetime(current_time.year, 12, 25, 0, 0, 0, 0, current_timezone)
+        christmas_time = datetime(
+            current_time.year, 12, 25, 0, 0, 0, 0, current_timezone
+        )
         print(christmas_time)
         estimated_left = christmas_time - current_time
 
