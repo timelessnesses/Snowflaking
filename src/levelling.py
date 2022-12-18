@@ -58,7 +58,7 @@ class Levelling(commands.Cog):
 
         level = (
             await self.db.fetch(
-                "SELECT * FROM user_ WHERE user_id = $1 AND guild_id = $2",
+                "SELECT * FROM level_user WHERE user_id = $1 AND guild_id = $2",
                 member.id,
                 member.guild.id,
             )
@@ -73,7 +73,7 @@ class Levelling(commands.Cog):
         except IndexError:
             bg_path = None
         users = await self.db.fetch(
-            "SELECT * FROM user_ WHERE guild_id = $1", member.guild.id
+            "SELECT * FROM level_user WHERE guild_id = $1", member.guild.id
         )
         users = sorted(users, key=lambda x: x["experience"], reverse=True)
         position = 1
@@ -101,6 +101,7 @@ class Levelling(commands.Cog):
                 position,
                 str(ctx.author),
                 str(ctx.author.status),
+                font_color=color
             ),
         )
 
@@ -118,7 +119,7 @@ class Levelling(commands.Cog):
         self.ratelimit[message.author.id]["time"] = time.time()
         exp = (
             await self.db.fetch(
-                "SELECT experience FROM user_ WHERE user_id = $1 AND guild_id = $2",
+                "SELECT experience FROM level_user WHERE user_id = $1 AND guild_id = $2",
                 message.author.id,
                 message.guild.id,
             )
@@ -168,7 +169,7 @@ class Levelling(commands.Cog):
                 )
             )[0]["background"]
             users = await self.db.fetch(
-                "SELECT * FROM user_ WHERE guild_id = $1", message.guild.id
+                "SELECT * FROM level_user WHERE guild_id = $1", message.guild.id
             )
             users = sorted(users, key=lambda x: x["experience"], reverse=True)
             position = 1
@@ -191,7 +192,7 @@ class Levelling(commands.Cog):
                 ),
             )
         await self.db.execute(
-            "UPDATE user_ SET experience = $1 WHERE user_id = $2 AND guild_id = $3",
+            "UPDATE level_user SET experience = $1 WHERE user_id = $2 AND guild_id = $3",
             exp,
             message.author.id,
             message.guild.id,

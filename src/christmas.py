@@ -48,6 +48,10 @@ class Christmas(commands.Cog):
     def format_time_to_string(self, time: timedelta):
         return f"{time.days} days, {time.seconds // 3600} hours, {time.seconds // 60 % 60} minutes, {time.seconds % 60} seconds"
 
+    @property
+    def display_emoji(self):
+        return "🎄"
+
     @tasks.loop(minutes=5)
     async def initialize_guilds(self):
         await self.bot.wait_until_ready()
@@ -82,7 +86,7 @@ class Christmas(commands.Cog):
                     )
                 )[0]
             except IndexError:
-                continue  # no reminder message so nothing to do also this also means no channel id
+                continue # no reminder message so nothing to do also this also means no channel id
             reminder_message = await guild.get_channel(
                 reminder_message["channel_id"]
             ).fetch_message(reminder_message["message_id"])
@@ -118,7 +122,7 @@ class Christmas(commands.Cog):
                     j.id,
                     guild.id,
                 )
-            else:
+            else:                                                                                                                                                                                                                                                                                                                                                                                                            
                 # delete annouced message then count the time left
                 try:
                     await christmas_message.get_partial_message(

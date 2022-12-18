@@ -2,6 +2,7 @@ import math
 import os
 import typing
 from io import BytesIO
+import logging
 
 import aiohttp
 import discord
@@ -10,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 class Generator:
     def __init__(self):
+        self.log = logging.getLogger("Snowflaking.ImageGen")
         self.default_bg = os.path.join(os.path.dirname(__file__), "assets", "card.png")
         self.online = os.path.join(os.path.dirname(__file__), "assets", "online.png")
         self.offline = os.path.join(os.path.dirname(__file__), "assets", "offline.png")
@@ -18,7 +20,12 @@ class Generator:
         self.streaming = os.path.join(
             os.path.dirname(__file__), "assets", "streaming.png"
         )
+        self.log.debug("Loading fonts...")
         self.font1 = os.path.join(os.path.dirname(__file__), "assets", "font.ttf")
+        self.font_normal = ImageFont.truetype(self.font1, 36)
+        self.font_small = ImageFont.truetype(self.font1, 20)
+        self.level_font = ImageFont.truetype(self.font1, 30)
+        self.log.debug("Fonts loaded.")
 
     async def generate_profile(
         self,
@@ -36,11 +43,14 @@ class Generator:
             255,
         ),
     ) -> discord.File:
+        self.log.info(f"Got request to generate profile card: {user_name}")
         level += 1  # i hate you rgbcube
         current_xp = 0
         if not bg_image:
+            self.log.debug("No background image found. Using default background image.")
             card = Image.open(self.default_bg).convert("RGBA")
         else:
+            self.log.debug("Fetching background image...")
             async with aiohttp.ClientSession() as session:
                 async with session.get(bg_image) as r:
                     card = Image.open(BytesIO(await r.read())).convert("RGBA")
@@ -49,6 +59,7 @@ class Generator:
             if width == 900 and height == 238:
                 pass
             else:
+                self.log.info("Resizing background image...")
                 x1 = 0
                 y1 = 0
                 x2 = width
@@ -60,9 +71,11 @@ class Generator:
                     y2 = nh + y1
 
                 card = card.crop((x1, y1, x2, y2)).resize((900, 238))
+        self.log.info("Fetching profile image...")
         async with aiohttp.ClientSession() as session:
             async with session.get(profile_image) as r:
                 profile = Image.open(BytesIO(await r.read())).convert("RGBA")
+        self.log.info("Resizing profile image...")
         profile = profile.resize((180, 180))
 
         if user_status == "online":
@@ -77,7 +90,7 @@ class Generator:
             status = Image.open(self.dnd)
 
         status = status.convert("RGBA").resize((40, 40))
-
+        self.log.info("Generating level card")
         profile_pic_holder = Image.new(
             "RGBA", card.size, (255, 255, 255, 0)
         )  # Is used for a blank image so that i can mask
@@ -91,10 +104,6 @@ class Generator:
 
         # Editing stuff here
 
-        # ======== Fonts to use =============
-        font_normal = ImageFont.truetype(self.font1, 36)
-        font_small = ImageFont.truetype(self.font1, 20)
-        level_font = ImageFont.truetype(self.font1, 30)
         # ======== Colors ========================
 
         def get_str(xp):
@@ -106,19 +115,19 @@ class Generator:
                 return str(round(xp / 1000000, 1)) + "M"
 
         draw = ImageDraw.Draw(card)
-        draw.text((245, 22), user_name, font_color, font=font_normal)
+        draw.text((245, 22), user_name, font_color, font=self.font_normal)
         draw.text(
             (245, 123),
             f"Server Rank #{server_position}",
             font_color,
-            font=font_small,
+            font=self.font_small,
         )
-        draw.text((245, 74), f"Level {level}", font_color, font=level_font)
+        draw.text((245, 74), f"Level {level}", font_color, font=self.level_font)
         draw.text(
             (245, 150),
             f"Exp {get_str(user_xp)}/{get_str(next_xp)}",
             font_color,
-            font=font_small,
+            font=self.font_small,
         )
 
         # Adding another blank layer for the progress bar
@@ -135,7 +144,7 @@ class Generator:
         current_percentage = (xphave / xpneed) * 100
         length_of_bar = (current_percentage * 4.9) + 248
         blank_draw.text(
-            (750, 150), f"{round(current_percentage,2)}%", font_color, font=font_small
+            (750, 150), f"{round(current_percentage,2)}%", font_color, font=self.font_small
         )
         blank_draw.rectangle((248, 188, length_of_bar, 202), fill=font_color)
         blank_draw.ellipse(
@@ -156,6 +165,7 @@ class Generator:
         final_bytes = BytesIO()
         final.save(final_bytes, "png")
         final_bytes.seek(0)
+        self.log.info("Returning profile card")
         return discord.File(final_bytes, filename="profile.png")
 
 

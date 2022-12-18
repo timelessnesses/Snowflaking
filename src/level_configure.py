@@ -24,12 +24,12 @@ class URLConverter(commands.Converter):
             raise commands.BadArgument(e)
 
 
-class Configure(commands.Cog):
+class Configure(commands.Cog,name="Level Configure"):
     """
     Configure the bot you intended to do in your server!
     """
 
-    def __init__(self, bot: commands.Cog):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db: asyncpg.pool.Pool = self.bot.db
 

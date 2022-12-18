@@ -25,7 +25,7 @@ logging.basicConfig(
     datefmt="%Y/%m/%d %H:%M:%S",
 )
 
-log = logging.getLogger("")
+log = logging.getLogger("Snowflaking")
 log.setLevel(logging.NOTSET)
 
 try:
@@ -99,7 +99,7 @@ async def on_ready():
     log.info(bot.user.name)
     log.info(bot.user.id)
     log.info("------")
-    await bot.change_presence(activity=discord.Game(name="a!help"))
+    await bot.change_presence(activity=discord.Game(name=f"{config.prefix}help"))
     await bot.tree.sync()
 
 
