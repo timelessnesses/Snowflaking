@@ -1,8 +1,8 @@
+import logging
 import math
 import os
 import typing
 from io import BytesIO
-import logging
 
 import aiohttp
 import discord
@@ -144,7 +144,10 @@ class Generator:
         current_percentage = (xphave / xpneed) * 100
         length_of_bar = (current_percentage * 4.9) + 248
         blank_draw.text(
-            (750, 150), f"{round(current_percentage,2)}%", font_color, font=self.font_small
+            (750, 150),
+            f"{round(current_percentage,2)}%",
+            font_color,
+            font=self.font_small,
         )
         blank_draw.rectangle((248, 188, length_of_bar, 202), fill=font_color)
         blank_draw.ellipse(

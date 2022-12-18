@@ -86,7 +86,7 @@ class Christmas(commands.Cog):
                     )
                 )[0]
             except IndexError:
-                continue # no reminder message so nothing to do also this also means no channel id
+                continue  # no reminder message so nothing to do also this also means no channel id
             reminder_message = await guild.get_channel(
                 reminder_message["channel_id"]
             ).fetch_message(reminder_message["message_id"])
@@ -122,7 +122,7 @@ class Christmas(commands.Cog):
                     j.id,
                     guild.id,
                 )
-            else:                                                                                                                                                                                                                                                                                                                                                                                                            
+            else:
                 # delete annouced message then count the time left
                 try:
                     await christmas_message.get_partial_message(

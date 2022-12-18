@@ -24,7 +24,7 @@ class URLConverter(commands.Converter):
             raise commands.BadArgument(e)
 
 
-class Configure(commands.Cog,name="Level Configure"):
+class Configure(commands.Cog, name="Level Configure"):
     """
     Configure the bot you intended to do in your server!
     """

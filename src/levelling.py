@@ -101,7 +101,7 @@ class Levelling(commands.Cog):
                 position,
                 str(ctx.author),
                 str(ctx.author.status),
-                font_color=color
+                font_color=color,
             ),
         )
 
