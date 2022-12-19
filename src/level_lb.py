@@ -41,7 +41,7 @@ class Leaderboard(commands.Cog):
         Get top 10 users ranked by highest exp!
         """
         users = await self.db.fetch(
-            "SELECT * FROM user_ WHERE guild_id = $1 ORDER BY experience DESC LIMIT 10",
+            "SELECT * FROM level_user WHERE guild_id = $1 ORDER BY experience DESC LIMIT 10",
             ctx.guild.id,
         )
         if not users:
